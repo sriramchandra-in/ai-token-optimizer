@@ -19,6 +19,12 @@ Optional depth. Read when implementing APIs, automation, or when the user wants 
 - Re-read only what drifted; do not re-ingest unchanged files between turns.
 - When delegating to subagents or subprocesses: minimal specs; require **summarized** returns, not raw dumps.
 
+## Context compaction (host-agnostic)
+
+- **Cadence:** After a milestone, offer a **one-screen summary** and suggest the product’s **compact / new chat** (or equivalent) when available.
+- **Always:** Shorter turns; no repeat of long stderr; point to “summary above.”
+- **Risk:** Keep **safety constraints**, **blockers**, and **exact versions** in the summary explicitly.
+
 ## Skills and rules
 
 - Load skills that match the task; avoid unrelated skill text.
@@ -119,4 +125,4 @@ Used only in repositories where the **codex-tree** tool generated `.codex-tree/`
 - `codex-tree check --format json` — staleness; do not trust digests for paths reported stale without reading source.
 - `codex-tree report` — heuristic token estimates (raw vs tree vs tree + digest markdown).
 
-Digest **folder names** (`claude/` vs `cursor/`) reflect generator output layout, not a mandate to use a particular IDE—they are two equivalent tiered views of the same tree.
+The codex-tree generator may write more than one digest directory on disk; use the digest set your workflow names first, or the only one present.

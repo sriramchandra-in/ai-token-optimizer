@@ -1,11 +1,12 @@
 ---
 name: token-optimization
 description: >-
-  Reduces tokens and API cost via shallow context, codex-tree digests, prompt
-  caching patterns, model tiering, batch vs sync calls, output caps, semantic
-  cache discipline, and request aggregation. Use when the user mentions tokens,
-  context limits, budget, cost, caching, batch API, model choice, or keeping
-  sessions small; or before pulling large files or redundant text into context.
+  Reduces tokens and API cost via shallow context, context-window compaction,
+  optional codex-tree digests, prompt caching patterns, model tiering, batch vs
+  sync calls, output caps, semantic cache discipline, and request aggregation.
+  Use when the user mentions tokens, context limits, budget, cost, caching,
+  compaction, batch API, model choice, or keeping sessions small; or before
+  pulling large files or redundant text into context.
 ---
 
 # Token optimization
@@ -18,10 +19,19 @@ This skill is **host-agnostic**: it applies to any coding agent with repo access
 
 ## When to apply
 
-- User asks to save tokens, stay under limits, lower cost, or keep replies compact.
+- User asks to save tokens, stay under limits, lower cost, compact context, or keep replies small.
 - Topics: prompt caching, batch API, model tiering, semantic cache, aggregation, output limits.
 - Session is long, or many large files are in scope.
 - You are about to read, paste, or repeat large blobs without a clear need.
+
+## Context window compaction
+
+**When appropriate**, shrink active context before limits bite.
+
+- Offer a **short handoff**: goal, constraints, files touched, open questions; drop stale tool dumps.
+- Suggest the host’s **compact / summarize / new conversation** flow when it exists; continue from the summary.
+- **New scope → new session** when history is unrelated; carry one short paragraph forward only.
+- After compaction, **don’t re-paste** large blobs unless needed.
 
 ## Defaults (in order)
 
@@ -56,7 +66,7 @@ Use these when building or configuring **integrations** (scripts, services, CI),
 
 Optional integration when another repository uses the **codex-tree** tool: prefer **tiered markdown digests** over raw source until depth is needed.
 
-- Under `.codex-tree/`, **`claude/l*.md`** and **`cursor/l*.md`** are **parallel** digest families with the **same l1→l2→l3 structure** (only the opening usage notes differ). Use whichever family your **team standard** names, or the sole family that exists on disk.
+- The generator may write **more than one digest directory** under `.codex-tree/` (same **l1→l2→l3** structure; preambles may differ). Prefer the digest family your **project or editor** standard names, or the **only** `l*.md` set present.
 - **Tier ladder:** l1 = orientation / tiny edits; l2 = feature work and APIs; l3 = refactors and full import/architecture detail.
 
 For stale files from `codex-tree check`, read **raw source** for those paths. For heuristic token comparisons, use `codex-tree report` (optional `--format json`). Full checkin workflow: see the **checkin** skill if present in that repository.
@@ -68,6 +78,7 @@ For stale files from `codex-tree check`, read **raw source** for those paths. Fo
 
 ## Checklist (quick)
 
+- [ ] Compaction or handoff when the thread is long or pivoting?
 - [ ] Smallest digest or search path tried first?
 - [ ] Stable-vs-volatile prompt layout respects caching if API calls are in play?
 - [ ] Model tier matches task risk and ambiguity?
